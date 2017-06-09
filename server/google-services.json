@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "734163636039",
+    "firebase_url": "https://esigamma.firebaseio.com",
+    "project_id": "esigamma",
+    "storage_bucket": "esigamma.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:734163636039:android:d20f6ceb6ed5fc9e",
+        "android_client_info": {
+          "package_name": "com.esigamma.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "734163636039-f9252rpcn5ae37r24dkq66p9454ki8p8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBetk3wb_OBbvzE1dZGCIflxH27N--JuT8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

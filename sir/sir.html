@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SIR</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+		<style>
+
+			html{
+				padding: 0;
+				margin: 0;
+			}
+
+			#settings {
+				height: 10vh;
+				width: 100vw;
+			}
+
+			#plot {
+				height: 90vh;
+				width: 100vw;
+			}
+			
+			fieldset {
+				display: inline-block;
+				width: 40vw;
+			}
+			
+			.population-settings input {
+				width: 40px;
+			}
+
+		</style>
+	</head>
+
+	<body>
+
+		<div id="settings">
+			<fieldset>
+				<legend>Disease Properties</legend>
+				Beta: <input type="range" id="beta" min="0.0" max="1.0" step="0.01" value="0.9"/>
+				Gamma: <input type="range" id="gamma" min="0.0" max="1.0" step="0.01" value="0.2"/>
+			</fieldset>
+			<fieldset class="population-settings">
+				<legend>Initial Population</legend>
+				Susceptible: <input type="number" id="s" value="950"/>
+				Infected: <input type="number" id="i" value="50"/>
+				Resistant: <input type="number" id="r" value="0"/>
+			</fieldset>
+		</div>
+		<div id="plot"></div>
+
+		<script type="text/javascript">
+		
+			/* global $ */
+			/* global Plotly */
+			
+			/*
+			 * Using Multiple Ports on Cloud9
+			 * https://docs.c9.io/docs/multiple-ports
+			 */
+			
+			const ENDPOINT = 'http://esigamma-vingkan.c9users.io/sir';
+			const YELLOW = 'rgb(255,153,0)';
+			const BLUE = 'rgb(51,102,204)';
+			const RED = 'rgb(220,57,18)';
+			
+			let betaInput = document.getElementById('beta');
+			let gammaInput = document.getElementById('gamma');
+			let sInput = document.getElementById('s');
+			let iInput = document.getElementById('i');
+			let rInput = document.getElementById('r');
+			
+			betaInput.addEventListener('input', simulate);
+			gammaInput.addEventListener('input', simulate);
+			sInput.addEventListener('input', simulate);
+			iInput.addEventListener('input', simulate);
+			rInput.addEventListener('input', simulate);
+			
+			simulate();
+			
+			function simulate(e) {
+				let params = {
+					b: betaInput.value,
+					g: gammaInput.value,
+					s: sInput.value,
+					i: iInput.value,
+					r: rInput.value
+				};
+				//console.log(params)
+				$.get(ENDPOINT, params, (data) => {
+					//console.log(data);
+					plotData(data);
+				});	
+			}
+			
+			function plotData(data) {
+				let layout = {
+					title: 'Simulated Infection Spread',
+					xaxis: {
+						title: 'Time (Days)'
+					},
+					yaxis: {
+						title: 'People'	
+					},
+					showlegend: true
+				};
+				let plots = [
+					{
+						x: data.t,
+						y: data.s,
+						name: 'Susceptible',
+						mode: 'markers',
+						marker: {
+							color: YELLOW
+						}
+					},
+					{
+						x: data.t,
+						y: data.i,
+						name: 'Infected',
+						mode: 'markers',
+						marker: {
+							color: BLUE
+						}
+					},
+					{
+						x: data.t,
+						y: data.r,
+						name: 'Resistant',
+						mode: 'markers',
+						marker: {
+							color: RED
+						}
+					}
+				];
+				Plotly.purge('plot');
+				Plotly.newPlot('plot', plots, layout);
+			}
+			
+		</script>
+		
+	</body>
+</html>
