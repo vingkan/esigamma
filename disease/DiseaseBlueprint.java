@@ -1,7 +1,7 @@
 
 abstract class DiseaseBlueprint {
     
-    abstract DiseaseAction move(SimulatedHost host, int energy);
+    abstract DiseaseAction move(SimulatedHost host);
     
     public DiseaseBlueprint() {
         

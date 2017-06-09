@@ -5,17 +5,15 @@ public class SimulatedHost {
     public static void main(String[] args) {
         DiseaseBlueprint dd = new DeltaDisease();
         SimulatedHost host = new SimulatedHost(AgeGroup.ADULT);
-        List<String> events = host.infect(dd);
-        System.out.println("Patient infection log for " + host + ":");
-        for(String res : events){
-            System.out.println(res);
-        }
+        host.infect(dd);
+        List<String> events = host.getDiseaseEvents();
         List<Integer[]> data = host.getDiseaseData();
-        int day = 1;
-        System.out.println("Day\tEnergy\tBacteria");
+        int d = 1;
+        System.out.println("Patient infection log for " + host + ":");
+        System.out.println("Day,Energy,Bacteria,Description");
         for(Integer[] vals : data){
-            System.out.println(day + "\t" + vals[0] + "\t" + vals[1]);
-            day++;
+            System.out.println(d + "," + vals[0] + "," + vals[1] + "," + events.get(d-1));
+            d++;
         }
     }
     
@@ -28,6 +26,8 @@ public class SimulatedHost {
         this.diseaseEvents = new ArrayList<String>();
         this.diseaseData = new ArrayList<Integer[]>();
     }
+    
+    private int day;
     
     private int energy;
     private int INITIAL_ENERGY = 100;
@@ -50,7 +50,19 @@ public class SimulatedHost {
         return bacteria > LATENT_THRESHOLD;
     }
     
-    public List<String> infect(DiseaseBlueprint disease) {
+    public int getEnergy() {
+        return this.energy;
+    }
+    
+    public int getBacteria() {
+        return this.bacteria;
+    }
+    
+    public int getDaysSinceInfection() {
+        return day;
+    }
+    
+    public void infect(DiseaseBlueprint disease) {
         int day = 1;
         bacteria = INITIAL_BACTERIA;
         energy = INITIAL_ENERGY;
@@ -58,45 +70,44 @@ public class SimulatedHost {
         diseaseData.add(initialData);
         while(energy > MIN_ENERGY){
             energy -= DAY_COST;
-            DiseaseAction action = disease.move(this, energy);
+            DiseaseAction action = disease.move(this);
             switch(action){
                 case MULTIPLY:
                     bacteria += BACTERIA_GROWTH;
                     energy += (ENERGY_PER_BACTERIA * bacteria);
-                    diseaseEvents.add("Day " + day + ":\tInfection multiplied.");
+                    diseaseEvents.add("Day " + day + ": Infection multiplied.");
                     break;
                 case RELEASE:
                     if(isIncubated()){
                         energy -= TOXIN_COST;
                         if(energy > MIN_ENERGY){
-                            diseaseEvents.add("Day " + day + ":\tToxin released.");
+                            diseaseEvents.add("Day " + day + ": Toxin released.");
                         }
                         else{
-                            diseaseEvents.add("Day " + day + ":\tFailed to release toxin.");
+                            diseaseEvents.add("Day " + day + ": Failed to release toxin.");
                         }   
                     }
                     else{
-                        diseaseEvents.add("Day " + day + ":\tFailed to release toxin.");
+                        diseaseEvents.add("Day " + day + ": Failed to release toxin.");
                     }
                     break;
                 case EXIT:
                     if(isLatent()){
-                        diseaseEvents.add("Day " + day + ":\tInfection exited the host.");
+                        diseaseEvents.add("Day " + day + ": Infection exited the host.");
                     }
                     else{
-                        diseaseEvents.add("Day " + day + ":\tFailed to exit host.");
+                        diseaseEvents.add("Day " + day + ": Failed to exit host.");
                     }
                     break;
                 default:
-                    diseaseEvents.add("Day " + day + ":\tNo activity.");
+                    diseaseEvents.add("Day " + day + ": No activity.");
                     break;
             }
             Integer[] data = {energy, bacteria};
             diseaseData.add(data);
             day++;
         }
-        diseaseEvents.add("Day " + day + ":\tInfection died out.");
-        return this.diseaseEvents;
+        diseaseEvents.add("Day " + day + ": Infection died out.");
     }
     
     public List<String> getDiseaseEvents() {

@@ -34,21 +34,22 @@ class DeltaDisease extends DiseaseBlueprint {
     }
     
     private int exits = 0;
+    private boolean alternator = false;
     
     @Override
-    public DiseaseAction move(SimulatedHost host, int energy) {
+    public DiseaseAction move(SimulatedHost host) {
         DiseaseAction action = DiseaseAction.MULTIPLY;
         if(host.isIncubated()){
             action = DiseaseAction.RELEASE;
         }
         else if(host.isLatent()){
-            if(exits < 3){
-                action = DiseaseAction.EXIT;
-                exits++;    
-            }
-            else{
+            if(alternator){
                 action = DiseaseAction.MULTIPLY;
             }
+            else{
+                action = DiseaseAction.EXIT;
+            }
+            alternator = !alternator;
         }
         else{
             action = DiseaseAction.MULTIPLY;
