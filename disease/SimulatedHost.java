@@ -33,7 +33,8 @@ public class SimulatedHost {
     private int INITIAL_ENERGY = 100;
     private int MIN_ENERGY = 0;
     private int TOXIN_COST = 60;
-    private int DAY_COST = 10;
+    private int EXIT_COST = 40;
+    private int DAY_COST = 2;
     
     private int bacteria;
     private int INITIAL_BACTERIA = 0;
@@ -69,7 +70,7 @@ public class SimulatedHost {
         Integer[] initialData = {energy, bacteria};
         diseaseData.add(initialData);
         while(energy > MIN_ENERGY){
-            energy -= DAY_COST;
+            energy -= (DAY_COST * bacteria);
             DiseaseAction action = disease.move(this);
             switch(action){
                 case MULTIPLY:
@@ -93,7 +94,13 @@ public class SimulatedHost {
                     break;
                 case EXIT:
                     if(isLatent()){
-                        diseaseEvents.add("Day " + day + ": Infection exited the host.");
+                        energy -= EXIT_COST;
+                        if(energy > MIN_ENERGY){
+                            diseaseEvents.add("Day " + day + ": Infection exited the host.");
+                        }
+                        else{
+                           diseaseEvents.add("Day " + day + ": Failed to exit host."); 
+                        }
                     }
                     else{
                         diseaseEvents.add("Day " + day + ": Failed to exit host.");
