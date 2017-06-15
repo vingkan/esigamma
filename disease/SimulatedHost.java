@@ -3,7 +3,8 @@ import java.util.*;
 public class SimulatedHost {
     
     public static void main(String[] args) {
-        DiseaseBlueprint dd = new DeltaDisease();
+        //DiseaseBlueprint dd = new DeltaDisease();
+        DiseaseBlueprint dd = new GammaDisease();
         SimulatedHost host = new SimulatedHost(AgeGroup.ADULT, 1000);
         host.infect(dd);
         List<String> events = host.getDiseaseEvents();
@@ -29,17 +30,19 @@ public class SimulatedHost {
     }
     
     private int day;
+    private int MAX_DAYS = 50;
     
     private int energy;
     private int INITIAL_ENERGY = 100;
     private int MIN_ENERGY = 0;
-    private int TOXIN_COST = 60;
-    private int EXIT_COST = 40;
+    private int TOXIN_COST = 4;
+    private int EXIT_COST = 2;
     private int DAY_COST = 2;
     
     private int bacteria;
     private int INITIAL_BACTERIA = 0;
     private int BACTERIA_GROWTH = 10;
+    private int BACTERIA_DECAY = 2;
     private int ENERGY_PER_BACTERIA = 5;
     private int INCUBATION_TRESHOLD = 50;
     private int LATENT_THRESHOLD = 30;
@@ -70,7 +73,7 @@ public class SimulatedHost {
         energy = INITIAL_ENERGY;
         Integer[] initialData = {energy, bacteria};
         diseaseData.add(initialData);
-        while(energy > MIN_ENERGY){
+        while(energy > MIN_ENERGY && day < MAX_DAYS){
             energy -= (DAY_COST * bacteria);
             DiseaseAction action = disease.move(this);
             switch(action){
@@ -81,7 +84,7 @@ public class SimulatedHost {
                     break;
                 case RELEASE:
                     if(isIncubated()){
-                        energy -= TOXIN_COST;
+                        energy -= (TOXIN_COST * bacteria);
                         if(energy > MIN_ENERGY){
                             diseaseEvents.add("Day " + day + ": Toxin released.");
                         }
@@ -95,7 +98,7 @@ public class SimulatedHost {
                     break;
                 case EXIT:
                     if(isLatent()){
-                        energy -= EXIT_COST;
+                        energy -= (EXIT_COST * bacteria);
                         if(energy > MIN_ENERGY){
                             diseaseEvents.add("Day " + day + ": Infection exited the host.");
                         }
@@ -111,6 +114,7 @@ public class SimulatedHost {
                     diseaseEvents.add("Day " + day + ": No activity.");
                     break;
             }
+            bacteria -= BACTERIA_DECAY;
             Integer[] data = {energy, bacteria};
             diseaseData.add(data);
             day++;
