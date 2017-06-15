@@ -4,7 +4,7 @@ public class SimulatedHost {
     
     public static void main(String[] args) {
         DiseaseBlueprint dd = new DeltaDisease();
-        SimulatedHost host = new SimulatedHost(AgeGroup.ADULT);
+        SimulatedHost host = new SimulatedHost(AgeGroup.ADULT, 1000);
         host.infect(dd);
         List<String> events = host.getDiseaseEvents();
         List<Integer[]> data = host.getDiseaseData();
@@ -21,8 +21,9 @@ public class SimulatedHost {
     private List<String> diseaseEvents;
     private List<Integer[]> diseaseData;
     
-    SimulatedHost(AgeGroup ageGroup) {
+    SimulatedHost(AgeGroup ageGroup, int initialEnergy) {
         this.ageGroup = ageGroup;
+        this.INITIAL_ENERGY = initialEnergy;
         this.diseaseEvents = new ArrayList<String>();
         this.diseaseData = new ArrayList<Integer[]>();
     }

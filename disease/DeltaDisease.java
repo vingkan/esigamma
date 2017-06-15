@@ -33,7 +33,6 @@ class DeltaDisease extends DiseaseBlueprint {
         }
     }
     
-    private int exits = 0;
     private boolean alternator = false;
     
     @Override

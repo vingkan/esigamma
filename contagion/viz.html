@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Contagion</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<style>
+
+			html{
+				padding: 0;
+				margin: 0;
+			}
+			
+			.grid, #time {
+				display: block;
+				margin: 20px auto;
+			}
+			
+			.row {
+				display: block;
+				margin: 0;
+				padding: 0;
+				height: 20px;
+			}
+			
+			.cell {
+				width: 20px;
+				height: 20px;
+				display: inline-block;
+			}
+			
+			.S {
+				background: black;
+			}
+			
+			.I {
+				background: red;
+			}
+			
+			
+		</style>
+	</head>
+
+	<body>
+		
+		<div id="grid" class="grid"></div>
+		<input id="time" type="range" min="0" max="5">
+		
+		
+
+		<script type="text/javascript">
+		
+			/* global $ */
+			 
+			 const IN_DATA = `10,10
+				0,SSSSSSSSSSSSSSSSSSSSISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+				1,SSSSSSSSSSIISSSSSSSSIISSSSSSSSIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+				2,IIISSSSSSSIIISSSSSSSIIISSSSSSSIIISSSSSSSIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+				3,IIIISSSSSSIIIISSSSSSIIIISSSSSSIIIISSSSSSIIIISSSSSSIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+				4,IIIIISSSSSIIIIISSSSSIIIIISSSSSIIIIISSSSSIIIIISSSSSIIIIISSSSSIIIIISSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
+				5,IIIIIISSSSIIIIIISSSSIIIIIISSSSIIIIIISSSSIIIIIISSSSIIIIIISSSSIIIIIISSSSIIIIIISSSSSSSSSSSSSSSSSSSSSSSS`
+			
+			let GRID_X = false;
+			let GRID_Y = false;
+			let history = [];
+			let lines = IN_DATA.split('\n');
+			lines.forEach(line => {
+				let data = line.trim().split(',');
+				if(!GRID_X || !GRID_Y){
+					let config = data.map(s => parseInt(s, 10));
+					GRID_X = config[0];
+					GRID_Y = config[1];
+				}
+				else{
+					history.push(Grid(data[1], GRID_X, GRID_Y));
+				}
+			});
+			
+			let inputTime = document.getElementById('time');
+			let outputGrid = document.getElementById('grid');
+			
+			inputTime.max = history.length - 1;
+			inputTime.addEventListener('input', e => {
+				let t = parseInt(inputTime.value, 10);
+				console.log(t)
+				renderGrid(outputGrid, history[t]);
+			});
+			
+			renderGrid(outputGrid, history[0]);
+			
+			function Grid(s, x, y) {
+				let grid = [];
+				let row = [];
+				s.split('').forEach((cell, idx) => {
+					let xidx = idx - (grid.length * x);
+					if(xidx === x){
+						grid.push(row);
+						row = [cell];
+					}
+					else{
+						row.push(cell);	
+					}
+				});
+				grid.push(row);
+				return grid;
+			}
+			
+			function renderGrid(out, grid) {
+				let html = ``;
+				grid.forEach(list => {
+					let row = `<div class="row">`;
+					list.forEach(data => {
+						let cell = `<div class="cell ${data}"></div>`;
+						row += cell;
+					});
+					row += `</div>`;
+					html += row;
+				});
+				out.innerHTML = html;
+			}
+			
+		</script>
+		
+	</body>
+</html>
