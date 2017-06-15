@@ -162,6 +162,7 @@ public class ContagionSimulator {
                     str += a;
                 }
             }
+         
             System.out.println(str);
             t++;
         }

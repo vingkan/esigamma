@@ -61,6 +61,8 @@ public class SparkServer {
         
         // Cloud9 environments serve localhost to port 8080
         port(8080);
+        // Enable Cross-Origin Requests
+        enableCORS("*", "*", "*");
         
         before((req, res) -> {
             String path = req.pathInfo();
@@ -71,7 +73,7 @@ public class SparkServer {
         
         System.out.println("\nStarted.\n");
         
-        final FirebaseDatabase db = initDatabase();
+        /*final FirebaseDatabase db = initDatabase();
         FireWorker fw = new FireWorker(){
             @Override
             public void operation(AtomicBoolean done, CompletionListener cl){
@@ -89,7 +91,7 @@ public class SparkServer {
                 System.out.println(de);
                 System.out.println(dr);
             }
-        };
+        };*/
         /*FireWorker fw2 = new FireWorker(){
             @Override
             public void operation(AtomicBoolean done, CompletionListener cl){
@@ -172,14 +174,15 @@ public class SparkServer {
          * http://codingjunkie.net/completable-futures-part1/
          */
         get("/async", (req, res) -> {
-           CompletableFuture<String> cf = new CompletableFuture<>();
-           ExecutorService svc = Executors.newCachedThreadPool();
-           svc.submit(() -> {
-                Thread.sleep(10000);
+            CompletableFuture<String> cf = new CompletableFuture<>();
+            ExecutorService svc = Executors.newCachedThreadPool();
+            svc.submit(() -> {
+                Thread.sleep(2000);
                 cf.complete("Async Hello!");
                 return null;
-           });
-           return cf.get();
+            });
+            //return cf.get();
+            return "Zika";
         });
         
         /*
@@ -208,7 +211,7 @@ public class SparkServer {
             return obj;
         });
         
-        post("/measurements", (req, res) -> {
+        /*post("/measurements", (req, res) -> {
             double data = Double.parseDouble(req.queryParams("data"));
             CompletableFuture<String> cf = new CompletableFuture<>();
             FireWorker fw2 = new FireWorker(){
@@ -226,7 +229,7 @@ public class SparkServer {
             JSONObject obj = new JSONObject();
             obj.put("key", cf.get());
             return obj;
-        });
+        });*/
         
         System.out.println("\nEnd.\n");
     
@@ -247,6 +250,33 @@ public class SparkServer {
         FirebaseApp.initializeApp(options);
         FirebaseDatabase db = FirebaseDatabase.getInstance();
         return db;
+    }
+    
+    // Enables CORS on requests. This method is an initialization method and should be called once.
+    private static void enableCORS(final String origin, final String methods, final String headers) {
+    
+        options("/*", (request, response) -> {
+    
+            String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
+            if (accessControlRequestHeaders != null) {
+                response.header("Access-Control-Allow-Headers", accessControlRequestHeaders);
+            }
+    
+            String accessControlRequestMethod = request.headers("Access-Control-Request-Method");
+            if (accessControlRequestMethod != null) {
+                response.header("Access-Control-Allow-Methods", accessControlRequestMethod);
+            }
+    
+            return "OK";
+        });
+    
+        before((request, response) -> {
+            response.header("Access-Control-Allow-Origin", origin);
+            response.header("Access-Control-Request-Method", methods);
+            response.header("Access-Control-Allow-Headers", headers);
+            // Note: this may or may not be necessary in your particular application
+            response.type("application/json");
+        });
     }
     
 }
