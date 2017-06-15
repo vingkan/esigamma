@@ -3,9 +3,9 @@ import java.util.*;
 public class SimulatedHost {
     
     public static void main(String[] args) {
-        //DiseaseBlueprint dd = new DeltaDisease();
-        DiseaseBlueprint dd = new GammaDisease();
-        SimulatedHost host = new SimulatedHost(AgeGroup.ADULT, 1000);
+        DiseaseBlueprint dd = new DeltaDisease();
+        //DiseaseBlueprint dd = new GammaDisease();
+        SimulatedHost host = new SimulatedHost(AgeGroup.ADULT, 100);
         host.infect(dd);
         List<String> events = host.getDiseaseEvents();
         List<Integer[]> data = host.getDiseaseData();
@@ -33,7 +33,7 @@ public class SimulatedHost {
     private int MAX_DAYS = 50;
     
     private int energy;
-    private int INITIAL_ENERGY = 100;
+    private int INITIAL_ENERGY;
     private int MIN_ENERGY = 0;
     private int TOXIN_COST = 4;
     private int EXIT_COST = 2;
