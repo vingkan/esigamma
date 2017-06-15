@@ -32,8 +32,8 @@ class GammaDisease extends DiseaseBlueprint {
                 action = DiseaseAction.MULTIPLY;
             }
             else{
-                double rand = Math.random();
-                if(rand < 0.5){
+                int days = host.getDaysSinceInfection();
+                if(days % 2 == 0){
                     action = DiseaseAction.RELEASE;
                 }
                 else{

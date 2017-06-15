@@ -68,7 +68,7 @@ public class SimulatedHost {
     }
     
     public void infect(DiseaseBlueprint disease) {
-        int day = 1;
+        day = 1;
         bacteria = INITIAL_BACTERIA;
         energy = INITIAL_ENERGY;
         Integer[] initialData = {energy, bacteria};
