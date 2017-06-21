@@ -13,8 +13,40 @@ public class ChiSquareUtils {
     }
     
     public static void main(String[] args){
-        double res = pochisq(0.022, 3);
+        int df = 3;
+        double a = 1;
+        double b = 0;
+        double c = 8;
+        double d = 12;
+        double t = a + b + c + d;
+        double chiBase = Math.abs((a*d) - (b*c)) - (0.5*t);
+        double chiNum = t * Math.pow(chiBase, 2);
+        double chiDen = (a+b) * (c+d) * (a+c) * (b+d);
+        double chiSqr = chiNum / chiDen;
+        double res = pochisq(chiSqr,df);
+        System.out.println(chiSqr);
         System.out.println(res);
+        double fish1 = fishersExact(a, b, c, d);
+        double fish2 = fishersExact(b, a, d, c);
+        System.out.println(fish1);
+        System.out.println(fish2);
+    }
+    
+    public static double fishersExact(double a, double b, double c, double d){
+        double n = a + b + c + d;
+        double num = factorial(a+b) * factorial(c+d) * factorial(a+c) * factorial(b+d);
+        double den = factorial(a) * factorial(b) * factorial(c) * factorial(d) * factorial(n);
+        double p = num / den;
+        return p;
+    }
+    
+    public static double factorial(double n){
+        double res = 1;
+        while(n > 0){
+            res *= n;
+            n--;
+        }
+        return res;
     }
     
    /* POCHISQ -- probability of chi-square value
