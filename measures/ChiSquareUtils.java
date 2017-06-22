@@ -28,8 +28,12 @@ public class ChiSquareUtils {
         System.out.println(res);
         double fish1 = fishersExact(a, b, c, d);
         double fish2 = fishersExact(b, a, d, c);
+        double fish3 = fishersExact(c, d, a, b);
+        double fish4 = fishersExact(d, c, b, a);
         System.out.println(fish1);
         System.out.println(fish2);
+        System.out.println(fish3);
+        System.out.println(fish4);
     }
     
     public static double fishersExact(double a, double b, double c, double d){
