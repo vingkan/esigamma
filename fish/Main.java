@@ -41,20 +41,11 @@ public class Main {
     }
 
     public static void printLocationDetails(City city){
-        HashMap<Location, Integer> map = new HashMap<Location, Integer>();
-        for(Person person : city.getPeople()){
-            Location loc = person.getLocation();
-            if(map.containsKey(loc)){
-                map.put(loc, 1 + map.get(loc));
-            }
-            else{
-                map.put(loc, 1);
-            }
-        }
+        HashMap<Location, List<Person>> map = city.getPeopleByLocation();
         System.out.println(city.getName() + " at Time: " + city.getTime());
-        for(Map.Entry<Location, Integer> entry : map.entrySet()){
+        for(Map.Entry<Location, List<Person>> entry : map.entrySet()){
             Location lc = entry.getKey();
-            System.out.println(lc.getName() + ": " + entry.getValue());
+            System.out.println(lc.getName() + ": " + entry.getValue().size());
         }
     }
 
