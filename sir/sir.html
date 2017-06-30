@@ -58,9 +58,11 @@
 			/*
 			 * Using Multiple Ports on Cloud9
 			 * https://docs.c9.io/docs/multiple-ports
+			 * $ python -m SimpleHTTPServer 8081
+			 * Open: http://esidelta-vingkan.c9users.io:8081/sir.html
 			 */
 			
-			const ENDPOINT = 'http://esigamma-vingkan.c9users.io/sir';
+			const ENDPOINT = 'http://esidelta-vingkan.c9users.io/sir';
 			const YELLOW = 'rgb(255,153,0)';
 			const BLUE = 'rgb(51,102,204)';
 			const RED = 'rgb(220,57,18)';
@@ -85,13 +87,21 @@
 					g: gammaInput.value,
 					s: sInput.value,
 					i: iInput.value,
-					r: rInput.value
+					r: rInput.value,
+					d: 100.0
 				};
 				//console.log(params)
 				$.get(ENDPOINT, params, (data) => {
-					//console.log(data);
+					console.log(data);
 					plotData(data);
-				});	
+				}).fail((err) => {
+					console.log('Error in server call.');
+					console.log(err);	
+				});
+			}
+			
+			function roundListValues(list){
+				return list.map(d => Math.round(d));
 			}
 			
 			function plotData(data) {
@@ -108,7 +118,7 @@
 				let plots = [
 					{
 						x: data.t,
-						y: data.s,
+						y: roundListValues(data.s),
 						name: 'Susceptible',
 						mode: 'markers',
 						marker: {
@@ -117,7 +127,7 @@
 					},
 					{
 						x: data.t,
-						y: data.i,
+						y: roundListValues(data.i),
 						name: 'Infected',
 						mode: 'markers',
 						marker: {
@@ -126,7 +136,7 @@
 					},
 					{
 						x: data.t,
-						y: data.r,
+						y: roundListValues(data.r),
 						name: 'Resistant',
 						mode: 'markers',
 						marker: {

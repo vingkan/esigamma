@@ -60,7 +60,8 @@ public class SIRServer {
             int s0 = Integer.parseInt(req.queryParams("s"));
             int i0 = Integer.parseInt(req.queryParams("i"));
             int r0 = Integer.parseInt(req.queryParams("r"));
-            SIRModel model = new SIRModel(beta, gamma, s0, i0, r0);
+            double days = Double.parseDouble(req.queryParams("d"));
+            SIRModel model = new SIRModel(beta, gamma, s0, i0, r0, days);
             model.simulate();
             JSONObject obj = new JSONObject();
             obj.put("t", model.getTimeRecords());

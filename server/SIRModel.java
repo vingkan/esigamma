@@ -21,30 +21,48 @@ class SIRModel {
     private static double BETA = 0.9;               // % of S -> I
     private static double GAMMA = 0.2;              // % of I -> R
     
-    private static int S0 = 950;                    // Initially Susceptible
-    private static int I0 = 50;                     // Initially Infected
-    private static int R0 = 0;                      // Initially Resistant
-    private static int N = S0 + I0 + R0;            // Total Population
+    private static double S0 = 950;                    // Initially Susceptible
+    private static double I0 = 50;                     // Initially Infected
+    private static double R0 = 0;                      // Initially Resistant
+    private static double N = S0 + I0 + R0;            // Total Population
     
     private static double[] RANGE = {0.0, 10.0};    // Simulation Range in Days
+    //private static double DT = 0.1;                 // Step Size in Days
     private static double DT = 0.1;                 // Step Size in Days
     
     // Data Structure for storing records
-    public static List<Integer> S_HIST = new ArrayList<Integer>();
-    public static List<Integer> I_HIST = new ArrayList<Integer>();
-    public static List<Integer> R_HIST = new ArrayList<Integer>();
+    public static List<Double> S_HIST = new ArrayList<Double>();
+    public static List<Double> I_HIST = new ArrayList<Double>();
+    public static List<Double> R_HIST = new ArrayList<Double>();
     
     private static String OUTFILE = "sir-output.txt";   // Output File
     
-    public SIRModel(double beta, double gamma, int s0, int i0, int r0) {
+    public SIRModel(double beta, double gamma, int s0, int i0, int r0, double days) {
         S_HIST.clear();
         I_HIST.clear();
         R_HIST.clear();
         this.BETA = beta;
         this.GAMMA = gamma;
-        this.S0 = s0;
-        this.I0 = i0;
-        this.R0 = r0;
+        this.S0 = (double)s0;
+        this.I0 = (double)i0;
+        this.R0 = (double)r0;
+        this.RANGE[1] = days;
+        S_HIST.add(S0);
+        I_HIST.add(I0);
+        R_HIST.add(R0);
+    }
+    
+    public SIRModel(double beta, double gamma, int s0, int i0, int r0, double dt, double days) {
+        S_HIST.clear();
+        I_HIST.clear();
+        R_HIST.clear();
+        this.BETA = beta;
+        this.GAMMA = gamma;
+        this.S0 = (double)s0;
+        this.I0 = (double)i0;
+        this.R0 = (double)r0;
+        this.DT = dt;
+        this.RANGE[1] = days;
         S_HIST.add(S0);
         I_HIST.add(I0);
         R_HIST.add(R0);
@@ -58,9 +76,9 @@ class SIRModel {
         R_HIST.add(R0);
         
         // Run Simulation
-        int Sf = S(RANGE[1]);
-        int If = I(RANGE[1]);
-        int Rf = R(RANGE[1]);
+        double Sf = S(RANGE[1]);
+        double If = I(RANGE[1]);
+        double Rf = R(RANGE[1]);
         
         // TODO: Check that records have been correctly populated
         
@@ -71,9 +89,9 @@ class SIRModel {
             BufferedWriter bw = new BufferedWriter(fw);
             
             for (double ti = RANGE[0]; ti <= RANGE[1]; ti += DT) {
-                int Si = getRecord(S_HIST, ti);
-                int Ii = getRecord(I_HIST, ti);
-                int Ri = getRecord(R_HIST, ti);
+                double Si = getRecord(S_HIST, ti);
+                double Ii = getRecord(I_HIST, ti);
+                double Ri = getRecord(R_HIST, ti);
                 String row = ti + "\t" + Si+ "\t" + Ii + "\t" + Ri + "\n";
                 bw.write(row);
             }
@@ -89,23 +107,23 @@ class SIRModel {
     }
     
     public static void simulate() {
-        int Sf = S(RANGE[1]);
-        int If = I(RANGE[1]);
-        int Rf = R(RANGE[1]);
+        double Sf = S(RANGE[1]);
+        double If = I(RANGE[1]);
+        double Rf = R(RANGE[1]);
     }
     
     /*
      * @param t - simulation time in days
      * @return - number of people susceptible at time t
      */
-    public static int S(double t) {
-        int count = getRecord(S_HIST, t);
-        if (count != -1) {
+    public static double S(double t) {
+        double count = getRecord(S_HIST, t);
+        if (count >= 0) {
             return count;
         }
         else {
             double lt = t - DT;
-            int newCount = (int) ( S(lt) + dS(t) );
+            double newCount = ( (S(lt)) + dS(t) );
             S_HIST.add(newCount);
             return newCount;
         }
@@ -115,14 +133,14 @@ class SIRModel {
      * @param t - simulation time in days
      * @return - number of people infected at time t
      */    
-    public static int I(double t) {
-        int count = getRecord(I_HIST, t);
-        if (count != -1) {
+    public static double I(double t) {
+        double count = getRecord(I_HIST, t);
+        if (count >= 0) {
             return count;
         }
         else {
             double lt = t - DT;
-            int newCount = (int) ( I(lt) + dI(t) );
+            double newCount = ( (I(lt)) + dI(t) );
             I_HIST.add(newCount);
             return newCount;
         }
@@ -132,14 +150,14 @@ class SIRModel {
      * @param t - simulation time in days
      * @return - number of people resistant at time t
      */    
-    public static int R(double t) {
-        int count = getRecord(R_HIST, t);
-        if (count != -1) {
+    public static double R(double t) {
+        double count = getRecord(R_HIST, t);
+        if (count >= 0) {
             return count;
         }
         else {
             double lt = t - DT;
-            int newCount = (int) ( R(lt) + dR(t) );
+            double newCount = ( (R(lt)) + dR(t) );
             R_HIST.add(newCount);
             return newCount;
         }
@@ -151,7 +169,7 @@ class SIRModel {
      */    
     public static double dS(double t) {
         double lt = t - DT;
-        double change = (double) ( -1 * BETA * ( ( S(lt) * I(lt) ) / N ) );
+        double change = ( -1.0 * BETA * ( ( (S(lt)) * (I(lt)) ) / (N) ) );
         return change * DT;
     }
 
@@ -161,8 +179,8 @@ class SIRModel {
      */     
     public static double dI(double t) {
         double lt = t - DT;
-        double change = (double) ( BETA * ( ( S(lt) * I(lt) ) / N ) );
-        double removed = (double) ( -1 * GAMMA * I(lt) );
+        double change = ( BETA * ( ( (S(lt)) * (I(lt)) ) / (N) ) );
+        double removed = ( -1.0 * GAMMA * (I(lt)) );
         return (change + removed) * DT;
     }
 
@@ -172,7 +190,7 @@ class SIRModel {
      */     
     public static double dR(double t) {
         double lt = t - DT;
-        double change = (double) ( GAMMA * I(lt) );
+        double change = ( GAMMA * (I(lt)) );
         return change * DT;
     }
     
@@ -195,14 +213,14 @@ class SIRModel {
      * @param t - simulation time in days
      * @return - number of people recorded in data structure at time t
      */    
-    private static int getRecord(List<Integer> records, double t) {
+    private static double getRecord(List<Double> records, double t) {
         int index = getTimeIndex(t);
         try {
-            int count = records.get(index);
+            double count = records.get(index);
             return count;
         }
         catch(Exception e){
-            return -1;
+            return -1.0;
         }
     }
     
