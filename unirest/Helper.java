@@ -180,6 +180,18 @@ public class Helper {
         return content;
     }
     
+    public static List<String> readFileLines(String filename){
+        if(!fileMap.containsKey(filename)){
+            fileMap.put(filename, new FileRecord(filename));
+        }
+        FileRecord rec = fileMap.get(filename);
+        if(!rec.isOpenForReading()){
+            rec.openForReading();
+        }
+        List<String> content = rec.readFileLines();
+        return content;
+    }
+    
     public static void closeAllFiles(){
         for(Map.Entry<String, FileRecord> entry : fileMap.entrySet()){
             entry.getValue().closeFile();
