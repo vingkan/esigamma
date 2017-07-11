@@ -84,14 +84,18 @@ public class UnirestRunner {
                         throw new Exception("Could not parse date of inspection.");
                     }
                     String inspectionResult = res.get("results").toString();
+                    String highRisk;
+                    if (risk.equals("Risk 1 (High)")) {
+                        highRisk = "true";
+                    } else {
+                        highRisk = "false";
+                    }
                     String pass;
                     if (inspectionResult.equals("Pass")) {
                         pass = "true";
-                    }
-                    else if (inspectionResult.equals("Fail")) {
+                    } else if (inspectionResult.equals("Fail")) {
                         pass = "false";
-                    }
-                    else {
+                    } else {
                         throw new Exception("Special case for food inspection results.");
                     }
                     String violations; 
@@ -101,7 +105,7 @@ public class UnirestRunner {
                     } catch (Exception e) {
                         violations = "None.";
                     }
-                    String out = String.format("%s,%s,%s,%s,%s,%s,%s", lat, lng, name, license, pass, days, violations);
+                    String out = String.format("%s,%s,%s,%s,%s,%s,%s,%s", lat, lng, name, license, pass, highRisk, days, violations);
                     //System.out.println(out);
                     Helper.writeFileLine(filename, out);
                 } catch (Exception e) {
